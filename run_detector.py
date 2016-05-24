@@ -37,7 +37,8 @@ def detector(test_image_path, svm_model, scale, min_height, min_width, block_siz
                     cells_per_block=(block_size, block_size), visualise=True)
                 
                     score_calc =  np.dot(np.reshape(fd, (1, dim_size_feat)) , np.transpose(weight)) + bias
-                    if(score_calc[0][0] >= 0.5):
+                    if(score_calc[0][0] >= 1):
+                        print score_calc[0][0]
                         scores.append(score_calc[0][0])
                         box = [w, h, w+window_size[1], h+window_size[0]]
                         if curr_depth in bboxes:
@@ -56,8 +57,8 @@ def run_detector(test_image_path):
     scale = 0.8
     block_size = 2
     cell_size = 16
-    min_height = 64
-    min_width = 80
+    min_height = 80
+    min_width = 64
 
     return detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size)
 

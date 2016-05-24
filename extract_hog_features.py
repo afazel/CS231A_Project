@@ -32,7 +32,6 @@ def extract_neg_hog_features(path, num_samples, window_size, num_window_per_imag
 			if cnt < num_samples:
 				cnt = cnt + 1
 				im = cv2.imread(path + my_file)
-				print path + my_file
 				image = color.rgb2gray(im)
 				image_rows = image.shape[0]
 				image_cols = image.shape[1]
@@ -47,19 +46,23 @@ def extract_neg_hog_features(path, num_samples, window_size, num_window_per_imag
 					image_hog = image[x_min:x_max , y_min:y_max]
 
 					my_feature, _ = hog(image_hog, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(2, 2), visualise=True)
-
-					print my_feature.shape
 					features.append(my_feature)
 	return features
 
 
+pos_features = []
+folders = ["00000000", "00000001", "00000002", "00000003", "00000004", "00000005", "00000006", "00000007"]
+train_folder = ["A", "C", "D", "E"]
 
-image_path_pos = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Train_Set_A/00000000/"
-pos_features = extract_pos_hog_features(image_path_pos, 1000)
+for tr_folder in train_folder:
+	for my_folder in folders:
+		print tr_folder,my_folder
+		image_path_pos = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Train_Set_"+tr_folder+"/"+my_folder+"/"
+		pos_features = pos_features + extract_pos_hog_features(image_path_pos, 1000)
 
 #extract hog features for negative samples
 image_path_neg = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/INRIAPerson/Train/neg/"
-neg_features = extract_neg_hog_features(image_path_neg, 200, [64,80], 5)
+neg_features = extract_neg_hog_features(image_path_neg, 200, [80,64], 150)
 
 
 # concatinate positive and negative hog features
@@ -74,8 +77,8 @@ labels = pos_labels + neg_labels
 pickle.dump(labels, open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/peds_feature_to_label.p", 'w'))
 
 
-#extract hog features for testing
-image_path_pos_test = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Valid_Set_A/00000000/"
-pos_test_features = extract_pos_hog_features(image_path_pos, 1000)
-pickle.dump(pos_test_features, open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/ped_test_features.p", 'w'))
+# #extract hog features for testing
+# image_path_pos_test = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Valid_Set_A/00000000/"
+# pos_test_features = extract_pos_hog_features(image_path_pos, 1000)
+# pickle.dump(pos_test_features, open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/ped_test_features.p", 'w'))
 

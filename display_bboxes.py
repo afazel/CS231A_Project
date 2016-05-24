@@ -26,6 +26,7 @@ def draw_bboxes(bboxes, image_path, scale):
                 b = int((round(my_rect[1]/scale_back)))
                 c = int((round(my_rect[2]/scale_back)))
                 d = int((round(my_rect[3]/scale_back)))
+                print c-a , d-b
                 cv2.rectangle(my_im,(a,b),(c,d),(255,0,0),1)
                 plt.imshow(my_im)
 
