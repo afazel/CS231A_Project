@@ -17,6 +17,7 @@ def extract_pos_hog_features(path, num_samples):
 				cnt = cnt + 1
 				im = cv2.imread(path + my_file)
 				image = color.rgb2gray(im)
+				image = image[5:75 , 15:50]
 				my_feature, _ = hog(image, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(2, 2), visualise=True)
 				features.append(my_feature)
 	return features
@@ -29,10 +30,12 @@ def extract_neg_hog_features(path, num_samples, window_size, num_window_per_imag
 	cnt = 0
 	for dirpath, dirnames, filenames in walk(path):
 		for my_file in filenames:
+			print cnt,my_file
 			if cnt < num_samples:
 				cnt = cnt + 1
 				im = cv2.imread(path + my_file)
 				image = color.rgb2gray(im)
+				#image = image[5:75 , 15:50]
 				image_rows = image.shape[0]
 				image_cols = image.shape[1]
 				
@@ -58,11 +61,11 @@ for tr_folder in train_folder:
 	for my_folder in folders:
 		print tr_folder,my_folder
 		image_path_pos = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Train_Set_"+tr_folder+"/"+my_folder+"/"
-		pos_features = pos_features + extract_pos_hog_features(image_path_pos, 1000)
+		pos_features = pos_features + extract_pos_hog_features(image_path_pos, 500)
 
 #extract hog features for negative samples
 image_path_neg = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/INRIAPerson/Train/neg/"
-neg_features = extract_neg_hog_features(image_path_neg, 200, [80,64], 150)
+neg_features = extract_neg_hog_features(image_path_neg, 1000, [70,35], 20)
 
 
 # concatinate positive and negative hog features
