@@ -20,16 +20,16 @@ def scale_bboxes(bboxes_dict, scale):
         else:
             scale_back = math.pow(scale, depth-1)
             for my_rect in rects:   
-                a = int((round(my_rect[0]/scale_back)))
-                b = int((round(my_rect[1]/scale_back)))
-                c = int((round(my_rect[2]/scale_back)))
-                d = int((round(my_rect[3]/scale_back)))
+                a = int((round(my_rect[0]*scale_back)))
+                b = int((round(my_rect[1]*scale_back)))
+                c = int((round(my_rect[2]*scale_back)))
+                d = int((round(my_rect[3]*scale_back)))
                 new_box = [a,b,c,d]
                 bboxes.append(new_box)
     return bboxes
 
 
-def detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size):
+def detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size,orient):
     weight = svm_model.coef_ 
     bias = svm_model.intercept_
 
@@ -47,19 +47,19 @@ def detector(test_image_path, svm_model, scale, min_height, min_width, block_siz
         curr_depth +=1
         H = im.shape[0]
         W = im.shape[1]
-    
         dim_size_feat = weight.shape[1];
 
         for h in xrange(0,H,total_block_size / 2):
             for w in xrange(0,W,total_block_size / 2):
                 if ((window_size[1] + w <= W) and (window_size[0]+h) <= H):
-                    fd, hog_im = hog(im[h:(window_size[0]+h), w:(window_size[1]+w)], orientations=8, pixels_per_cell=(cell_size, cell_size),
+                    fd, hog_im = hog(im[h:(window_size[0]+h), w:(window_size[1]+w)], orientations=orient, pixels_per_cell=(cell_size, cell_size),
                     cells_per_block=(block_size, block_size), visualise=True)
-                
+                    #cv2.imshow('test',im[h:(window_size[0]+h), w:(window_size[1]+w)])
+                    #cv2.waitKey(0)
                     score_calc =  np.dot(np.reshape(fd, (1, dim_size_feat)) , np.transpose(weight)) + bias
-                    #print score_calc[0][0]
-                    if(score_calc[0][0] >= 1):
-                        print score_calc[0][0],curr_depth
+                    #print score_calc[0][0], curr_depth
+                    if(score_calc[0][0] >= 0):
+                        print "score and depth: ", score_calc[0][0],curr_depth
                         scores.append(score_calc[0][0])
                         box = [w, h, w+window_size[1], h+window_size[0]]
                         if curr_depth in bboxes:
@@ -73,32 +73,34 @@ def detector(test_image_path, svm_model, scale, min_height, min_width, block_siz
     return scaled_bboxes,scores
 
 
-def run_detector(test_image_path):
+def run_detector(test_image_path,scale):
 
-    svm_model = pickle.load(open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/trained_svm_model.p", "r"))
-    window_size = [70, 35]
-    scale = 0.95
+    svm_model = pickle.load(open("C:/Users/iarev1et/Desktop/Python/ped_detector/trained_svm_model.p", "r"))
+    window_size = [130, 65]
     block_size = 2
-    cell_size = 16
-    min_height = 70
-    min_width = 35
+    cell_size = 8
+    min_height = 130
+    min_width = 65
+    orient=9
 
-    return detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size)
+    return detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size,orient)
 
+scale = 1.2
+#test_image_path = "C:/Users/iarev1et/Desktop/pedestrians.jpg"
+#test_image_path = "C:/Users/iarev1et/Desktop/inria2.png"
+#test_image_path = "C:/Users/iarev1et/Desktop/test2.jpg"
+test_image_path = "C:/Users/iarev1et/Desktop/ped2.jpg"
+#test_image_path = "C:/Users/iarev1et/Desktop/person_323.png"
+#test_image_path = "C:/Users/iarev1et/Desktop/ped1.jpg"
+#test_image_path = "C:/Users/iarev1et/Desktop/test8.jpg"
+#test_image_path = "C:/Users/iarev1et/Desktop/person_217.png"
 
+bboxes, scores = run_detector(test_image_path,scale)
 
-#test_image_path = "/Users/azarf/Desktop/test_resize.pnm"
-test_image_path = "/Users/azarf/Desktop/test_6.jpg"
-#test_image_path = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/INRIAPerson/Train/pos/crop_000603.png"
-#test_image_path = "/Users/azarf/Documents/Courses/Spring2016/CS231A/project/64x80/NICTA_Pedestrian_Positive_Valid_Set_A/00000002/item_00002005.pnm"
-bboxes, scores = run_detector(test_image_path)
-scale = 0.8
 db.draw_bboxes(bboxes, test_image_path, scale)
 print len(bboxes), len(scores)
 print "#### start finding max supress boxes .... ###"
 bboxes = ns.nonmax_supress(bboxes, scores)
-
-scale = 0.8
 db.draw_bboxes(bboxes, test_image_path, scale)
 
 

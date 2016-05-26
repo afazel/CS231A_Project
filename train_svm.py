@@ -12,9 +12,9 @@ def train_svm(features, labels, reg_param, kernel_type):
 	return svm_model
 
 
-features = pickle.load(open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/ped_features.p", "r"))
-labels = pickle.load(open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/peds_feature_to_label.p", "r"))
+features = pickle.load(open("C:/Users/iarev1et/Desktop/Python/ped_detector/ped_features.p", "r"))
+labels = pickle.load(open("C:/Users/iarev1et/Desktop/Python/ped_detector/peds_feature_to_label.p", "r"))
+svm_model = train_svm(features, labels, 0.01,'linear')
+pickle.dump(svm_model, open("C:/Users/iarev1et/Desktop/Python/ped_detector/trained_svm_model.p", "w"))
 
-svm_model = train_svm(features, labels, 0.8, "linear")
-pickle.dump(svm_model, open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_project/trained_svm_model.p", "w"))
 

@@ -13,7 +13,8 @@ def draw_bboxes(bboxes, image_path, scale):
 
     my_im = cv2.imread(image_path)
     for box in bboxes:
-        cv2.rectangle(my_im,(box[0],box[1]),(box[2],box[3]),(255,0,0),1)
-        plt.imshow(my_im)
+        cv2.rectangle(my_im,(box[0],box[1]),(box[2],box[3]),(0,255,0),1)
+    
+    cv2.imshow('test',my_im)
+    cv2.waitKey(0)
 
-    plt.show()
