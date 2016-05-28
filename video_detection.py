@@ -2,6 +2,11 @@ import cv2
 import is_pedestrian as ped
 import math
 from skimage import color
+import pickle
+
+svm_model = pickle.load(open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_Project/trained_svm_model.p", "r"))
+weight = svm_model.coef_ 
+bias = svm_model.intercept_
 
 cap = cv2.VideoCapture("/Users/azarf/Desktop/ped_vid_good_azar.mp4")
 #passageway_test.mp4
@@ -51,7 +56,7 @@ while(1):
         extracted_contour = color.rgb2gray(extracted_contour)  
         
         scale = 1.2
-        my_ped = ped.run_detector(extracted_contour,scale)
+        my_ped = ped.run_detector(extracted_contour,weight, bias,scale)
         #print ped
         if my_ped:
             print "find ped"
