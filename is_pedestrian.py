@@ -9,7 +9,7 @@ import image_pyramid as ip
 def detector(my_im, weight,bias, scale, min_height, min_width, block_size, cell_size, window_size,orient, thresh):
     #weight = svm_model.coef_ 
     #bias = svm_model.intercept_
-    print "I am here"
+    #print "I am here"
     #my_im = cv2.imread(test_image_path)
     #my_im = color.rgb2gray(my_im)
 
@@ -28,8 +28,11 @@ def detector(my_im, weight,bias, scale, min_height, min_width, block_size, cell_
                     cells_per_block=(block_size, block_size), visualise=True)
                 
                     score_calc =  np.dot(np.reshape(fd, (1, dim_size_feat)) , np.transpose(weight)) + bias
-                    print score_calc[0][0]
+                    #print score_calc[0][0]
                     if(score_calc[0][0] >= thresh):
+                        print score_calc[0][0]
+                        cv2.imshow("current image", my_im)
+                        cv2.waitKey(25)
                         return True
     return False
 
@@ -37,7 +40,7 @@ def detector(my_im, weight,bias, scale, min_height, min_width, block_size, cell_
 def run_detector(image,weight, bias, scale):
     #svm_model = pickle.load(open("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/CS231A_Project/trained_svm_model.p", "r"))
     window_size = [128, 64]
-    block_size = 2
+    block_size = 4
     cell_size = 8
     min_height = 128
     min_width = 64
