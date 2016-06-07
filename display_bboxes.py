@@ -16,5 +16,5 @@ def draw_bboxes(bboxes, image_path, scale):
         cv2.rectangle(my_im,(box[0],box[1]),(box[2],box[3]),(0,255,0),1)
     
     cv2.imshow('test',my_im)
-    cv2.waitKey(0)
+    cv2.waitKey(1)
 

@@ -10,14 +10,6 @@ weight = svm_model.coef_
 bias = svm_model.intercept_
 
 cap = cv2.VideoCapture("/Users/azarf/Desktop/testvids/terrace.mp4")
-#passageway_test.mp4
-#Recording-Session-840674.mp4
-#ped_vid_good_azar.mp4
-#terrace.mp4"
-#WalkByShop1front.mp4
-#ret, frame = cap.retrieve()
-
-
 fgbg = cv2.BackgroundSubtractorMOG()
 
 while(1):
@@ -28,21 +20,18 @@ while(1):
     rect_frame = frame
     fgmask = fgbg.apply(frame)
 
-    # diplay bachground subtraction results
-    #cv2.imshow('frame',fgmask)
-    #cv2.imshow('img',frame)
-    #if cv2.waitKey(1) & 0xFF == ord('q'):
-     #   break
+    cv2.imshow('Background Subtraction',fgmask)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
     cnt = 0
     (contours, _) = cv2.findContours(fgmask, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     for c in contours:
-        # if the contour is too small, ignore it
-        if cv2.contourArea(c) < 10:
-            continue
  
         # compute the bounding box for the contour, draw it on the frame,
         # and update the text
         (xmin, ymin, w, h) = cv2.boundingRect(c)
+        if w > h:
+            continue 
         
         window_size = [64, 128]
         xmax = xmin + w
@@ -68,13 +57,12 @@ while(1):
             scores.append(score)
             bbox.append([int(xmin_p), int(ymin_p), int(xmax_p), int(ymax_p)])
             
-    print "# of bboxes before nonmax_suppress:",len(bbox)
     if scores:
         bbox = ns.nonmax_supress(bbox, scores)
-    print "# of bboxes after nonmax_suppress:",len(bbox)
+
     for box in bbox:
         cv2.rectangle(rect_frame, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 2)
-    cv2.imshow("detect",rect_frame)
+    cv2.imshow("Video",rect_frame)
     cv2.waitKey(1)
         
 

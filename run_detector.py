@@ -8,25 +8,9 @@ import image_pyramid as ip
 import display_bboxes as db
 import nonmax_supress as ns
 import matplotlib.pyplot as plt
+import scale_bboxes as sb
 import math
 
-def scale_bboxes(bboxes_dict, scale):
-    bboxes = []
-    for depth,rects in bboxes_dict.iteritems():
-        if depth == 1:
-            for rect in rects:
-                bboxes.append(rect)
-
-        else:
-            scale_back = math.pow(scale, depth-1)
-            for my_rect in rects:   
-                a = int((round(my_rect[0]*scale_back)))
-                b = int((round(my_rect[1]*scale_back)))
-                c = int((round(my_rect[2]*scale_back)))
-                d = int((round(my_rect[3]*scale_back)))
-                new_box = [a,b,c,d]
-                bboxes.append(new_box)
-    return bboxes
 
 
 def detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size,orient, thresh,flag):
@@ -57,7 +41,7 @@ def detector(test_image_path, svm_model, scale, min_height, min_width, block_siz
                     #cv2.imshow('test',im[h:(window_size[0]+h), w:(window_size[1]+w)])
                     #cv2.waitKey(0)
                     score_calc =  np.dot(np.reshape(fd, (1, dim_size_feat)) , np.transpose(weight)) + bias
-                    #print score_calc[0][0], curr_depth
+                    print score_calc[0][0], curr_depth
                     if(score_calc[0][0] >= thresh):
                         print "score and depth: ", score_calc[0][0],curr_depth
                         if flag == 1:
@@ -74,7 +58,7 @@ def detector(test_image_path, svm_model, scale, min_height, min_width, block_siz
                             plt.savefig("/Users/azarf/Documents/Courses/Spring2016/CS231A/project/negative_hard_mining/nhm_"+hard_minig_cnt+"jpg")
                             hard_minig_cnt += 1
     if flag == 1:
-        scaled_bboxes = scale_bboxes(bboxes, scale)
+        scaled_bboxes = sb.scale_bboxes(bboxes, scale)
         return scaled_bboxes,scores
 
 
@@ -87,20 +71,15 @@ def run_detector(test_image_path,scale, flag):
     min_height = 128
     min_width = 64
     orient = 9
+    thresh = 0
 
-    return detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size,orient, flag)
+    return detector(test_image_path, svm_model, scale, min_height, min_width, block_size, cell_size, window_size,orient,thresh, flag)
 
 ########################################################################################
 scale = 1.2
-#test_image_path = "C:/Users/iarev1et/Desktop/pedestrians.jpg"
-#test_image_path = "C:/Users/iarev1et/Desktop/inria2.png"
-#test_image_path = "C:/Users/iarev1et/Desktop/test2.jpg"
-#test_image_path = "C:/Users/iarev1et/Desktop/ped2.jpg"
-#test_image_path = "C:/Users/iarev1et/Desktop/person_323.png"
-#test_image_path = "C:/Users/iarev1et/Desktop/ped1.jpg"
-#test_image_path = "C:/Users/iarev1et/Desktop/test8.jpg"
-#test_image_path = "C:/Users/iarev1et/Desktop/person_217.png"
-flag = 0
+test_image_path = "/Users/azarf/Desktop/screen_test.png"
+
+flag = 1
 if flag == 1:
     bboxes, scores = run_detector(test_image_path,scale,flag)
 
